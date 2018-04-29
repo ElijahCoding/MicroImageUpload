@@ -16,23 +16,27 @@ $app = new Slim\App([
             'name' => getenv('APP_NAME')
         ],
 
-        'views' => [
-            'cache' => getenv('VIEW_CACHE_DISABLED') === 'true' ? false : __DIR__ . '/../storage/views'
-        ]
+        'database' => [
+           'driver' => 'pgsql',
+           'host' => 'localhost',
+           'port' => 54320,
+           'database' => 'microimage',
+           'username' => 'homestead',
+           'password' => 'secret',
+           'charset' => 'utf8',
+           'collation' => 'utf8_unicode_ci',
+           'prefix' => '',
+       ],
+
     ],
 ]);
 
 $container = $app->getContainer();
 
-$container['view'] = function ($container) {
-    $view = new \Slim\Views\Twig(__DIR__ . '/../resources/views', [
-        'cache' => $container->settings['views']['cache']
-    ]);
+$capsule = new Illuminate\Database\Capsule\Manager();
+$capsule->addConnection($container['settings']['database']);
 
-    $basePath = rtrim(str_ireplace('index.php', '', $container['request']->getUri()->getBasePath()), '/');
-    $view->addExtension(new Slim\Views\TwigExtension($container['router'], $basePath));
+$capsule->setAsGlobal();
+$capsule->bootEloquent();
 
-    return $view;
-};
-
-require_once __DIR__ . '/../routes/web.php';
+require_once __DIR__ . '/../routes/api.php';
