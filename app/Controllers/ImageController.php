@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use Exception;
 use App\Files\FileStore;
 use App\Controllers\Controller;
 use Psr\Http\Message\{
@@ -17,7 +18,12 @@ class ImageController extends Controller
         return $response->withStatus(422);
       }
 
-      
+      try {
+        $this->c->image->make($upload->file);
+      } catch (Exception $e) {
+        return $response->withStatus(422);
+      }
+
 
       $store = (new FileStore())->store($upload);
 
