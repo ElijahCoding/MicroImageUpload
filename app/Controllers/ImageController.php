@@ -17,6 +17,8 @@ class ImageController extends Controller
         return $response->withStatus(422);
       }
 
+      
+
       $store = (new FileStore())->store($upload);
 
       return $response->withJson([

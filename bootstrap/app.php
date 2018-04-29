@@ -28,6 +28,11 @@ $app = new Slim\App([
            'prefix' => '',
        ],
 
+       'image' => [
+            'cache' => [
+                'path' => base_path('storage/cache/image')
+            ]
+        ]
     ],
 ]);
 
@@ -39,5 +44,12 @@ $capsule->setEventDispatcher(new Illuminate\Events\Dispatcher());
 
 $capsule->setAsGlobal();
 $capsule->bootEloquent();
+
+$container['image'] = function ($container) {
+    $manager = new Intervention\Image\ImageManager();
+    $manager->configure($container['settings']['image']);
+
+    return $manager;
+};
 
 require_once __DIR__ . '/../routes/api.php';
