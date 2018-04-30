@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use Exception;
+use App\Models\Image;
 use App\Files\FileStore;
 use App\Controllers\Controller;
 use Psr\Http\Message\{
@@ -32,5 +33,23 @@ class ImageController extends Controller
           'uuid' => $store->getStored()->uuid
         ]
       ]);
+    }
+
+    public function show(Request $request, Response $response, $args)
+    {
+      extract($args);
+
+      try {
+        $image = Image::where('uuid', $uuid)->firstOrFail();
+
+      } catch (Exception $e) {
+        return $response->withStatus(404);
+      }
+
+      $response->getBody()->write(
+        $this->c->image->make(uploads_path($image->uuid))->encode('png')
+      );
+
+      return $response->withHeader('Content-Type', 'image/png');
     }
 }
