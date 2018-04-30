@@ -50,6 +50,21 @@ class ImageController extends Controller
         $this->c->image->make(uploads_path($image->uuid))->encode('png')
       );
 
-      return $response->withHeader('Content-Type', 'image/png');
+      return $this->respondWithHeaders($response);
+    }
+
+    protected function respondWithHeaders($response)
+    {
+      foreach ($this->getResponseHeaders() as $header => $value) {
+        $response = $response->withHeader($header, $value);
+      }
+      return $response;
+    }
+
+    protected function getResponseHeaders()
+    {
+      return [
+        'Content-Type' => 'image/png'
+      ];
     }
 }
